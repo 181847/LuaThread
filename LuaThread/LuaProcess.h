@@ -19,6 +19,14 @@ extern "C"
 }
 #endif
 
+// get thread by userdata
+#define CHECK_USERDATA_THREAD(L) \
+	(reinterpret_cast<Lua::LuaThread*>(luaL_checkudata(L, 1, "Lua.Process.Thread")))
+
+// get thread by userdata
+#define CHECK_USERDATA_THREAD_INDEX(L, index) \
+	(reinterpret_cast<Lua::LuaThread*>(luaL_checkudata(L, index, "Lua.Process.Thread")))
+
 static int lua_newThread(lua_State * L);
 
 static int lua_resume(lua_State * L);
@@ -30,3 +38,12 @@ static const struct luaL_Reg LuaProcessLib[]=
 	{ NULL,				NULL }
 };
 
+static const struct luaL_Reg LuaThreadMethods[] =
+{
+	{ "resume",			lua_resume },
+	{ NULL,				NULL }
+};
+
+DWORD WINAPI StartupLuaExecute(void * pLua_state);
+
+int doWhenFailed(lua_State * L, const char * msg);
