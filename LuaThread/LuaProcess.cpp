@@ -3,7 +3,7 @@
 int LUAPROCESS_API luaopen_LuaProcess(lua_State * L)
 {
 	luaL_newmetatable(L, "Lua.Process.Thread");
-	lua_pushvalue(L, 1);
+	lua_pushvalue(L, -1);
 	lua_setfield(L, -2, "__index");
 	luaL_setfuncs(L, LuaThreadMethods, 0);
 
@@ -18,6 +18,10 @@ int lua_newThread(lua_State * L)
 	// creat another stack, remember that don't lose the reference to the newState,
 	// or the newState will be collected by the mainThread.
 	lua_State * newState = lua_newthread(L);
+
+	// get the function to the stack top, then pass the function to the newState.
+	lua_pushvalue(L, 1);
+	lua_xmove(L, newState, 1);
 
 	// create a new userdata to store the thread information,
 	// remember that the Lua::LuaThread is not a heap obj
@@ -84,8 +88,12 @@ int lua_resume(lua_State * L)
 
 DWORD WINAPI StartupLuaExecute(void * pLua_state)
 {
+	DEBUG_MESSAGE("thread resume start\n");
 	auto * L = reinterpret_cast<lua_State*>(pLua_state);
+	DEBUG_MESSAGE("stack size: %d\n", lua_gettop(L));
 	lua_pcall(L, 0, 0, 0);
+
+	DEBUG_MESSAGE("thread resume end\n");
 	return 0;
 }
 
