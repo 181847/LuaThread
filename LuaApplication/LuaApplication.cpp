@@ -9,6 +9,7 @@
 
 int main()
 {
+	/*
 	auto luaInter1 = std::make_unique<LuaInterpreter>();
 
 	luaInter1->DoFile("MainThread.lua");
@@ -22,7 +23,26 @@ int main()
 	thread2.join();
 
 	printf("two thread completed\n");
+	*/
+
+
+
+
+
+	auto luaInter1 = std::make_unique<LuaInterpreter>();
+
+	luaInter1->DoFile("Init.lua");
+	luaInter1->Run();
+
+
+
+
+
+
 	getchar();
+
+
+
     return 0;
 }
 
