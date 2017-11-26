@@ -27,6 +27,14 @@ extern "C"
 #define CHECK_USERDATA_THREAD_INDEX(L, index) \
 	(reinterpret_cast<Lua::LuaThread*>(luaL_checkudata(L, index, "Lua.Process.Thread")))
 
+// get thread by userdata
+#define CHECK_USERDATA_MUTEX(L) \
+	(reinterpret_cast<Lua::LuaThread*>(luaL_checkudata(L, 1, "Lua.Process.Mutex")))
+
+// get thread by userdata
+#define CHECK_USERDATA_MUTEX_INDEX(L, index) \
+	(reinterpret_cast<Lua::LuaThread*>(luaL_checkudata(L, index, "Lua.Process.Mutex")))
+
 static int lua_newThread(lua_State * L);
 
 static int lua_resume(lua_State * L);
@@ -34,7 +42,7 @@ static int lua_resume(lua_State * L);
 static const struct luaL_Reg LuaProcessLib[]=
 {
 	{ "newThread",		lua_newThread },
-	{ "resume",			lua_resume },
+	//{ "resume",			lua_resume },
 	{ NULL,				NULL }
 };
 
