@@ -2,6 +2,7 @@
 This script is used to config the interpretoer,
 such as adding the search patch.
 --]]
+print("Start Initialization")
 
 function DebugLogger(message, ...)
     print('----- DEBUG:', message, ...)
@@ -14,6 +15,11 @@ end
 
 local function AddCPath(path)
     package.cpath = package.cpath..";"..path
+end
+
+-- print the key, value in a table
+function PrintTable(t)
+    for k, v in pairs(t) do print(k, v) end
 end
 
 AddPath("D:\\GitHub\\Lua\\LoadAssets\\?.lua")
@@ -41,3 +47,20 @@ loadfile = function(filePath)
         error("no such file:\n\t"..filePath)
     end
 end
+
+
+func1 = loadfile("thread1.lua")
+func2 = loadfile("thread2.lua")
+main = loadfile("MainThread.lua")
+lp = require("LuaProcess")
+
+
+print("Initialization Completed")
+
+main()
+nt1 = lp.newThread(func1);
+nt2 = lp.newThread(func2);
+success, msg, code = nt1.ThreadInfo:resume()
+assert(success, msg)
+success, msg, code = nt2.ThreadInfo:resume()
+assert(success, msg)
