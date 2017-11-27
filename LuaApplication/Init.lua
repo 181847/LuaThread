@@ -57,7 +57,9 @@ lp = require("LuaProcess")
 
 print("Initialization Completed")
 
-main()
+t = {a = 0, b = 0}
+mu = lp.newMutex()
+
 nt1 = lp.newThread(func1);
 nt2 = lp.newThread(func2);
 success, msg, code = nt1.ThreadInfo:resume()
