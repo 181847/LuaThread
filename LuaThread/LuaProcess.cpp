@@ -7,6 +7,8 @@ int LUAPROCESS_API luaopen_LuaProcess(lua_State * L)
 	lua_setfield(L, -2, "__index");
 	luaL_setfuncs(L, LuaThreadMethods, 0);
 
+	registeUserdataType(L, LuaMutexMetatableName, LuaMutexMethods);
+
 	luaL_newlib(L, LuaProcessLib);
 	return 1;
 }
@@ -27,7 +29,8 @@ int lua_newThread(lua_State * L)
 	// remember that the Lua::LuaThread is not a heap obj
 	// so we don't need a pointContainer,
 	// nor do we need a __gc method.
-	auto * pThread = reinterpret_cast<Lua::LuaThread*>(lua_newuserdata(L, sizeof(Lua::LuaThread)));
+	auto * pThread = reinterpret_cast<Lua::LuaThread*>(
+		lua_newuserdata(L, sizeof(Lua::LuaThread)));
 	// clear memeory
 	pThread->ThreadHandle = 0;
 	pThread->ThreadID = 0;
@@ -83,6 +86,79 @@ int lua_resume(lua_State * L)
 	{
 		lua_pushboolean(L, true);
 		return 1;
+	}
+}
+
+int lua_newMutex(lua_State * L)
+{
+	auto pmutex = newUserdataInStack<HANDLE>(L, LuaMutexMetatableName);
+
+	*pmutex = CreateMutex(NULL, false, NULL);
+
+	if (*pmutex == NULL)
+	{
+		return doWhenFailed(L, "Mutex creation failed");
+	}
+
+	return 1;
+}
+
+int lua_lockMutex(lua_State * L)
+{
+	auto *pmutex = CHECK_USERDATA_MUTEX(L);
+	DWORD waitTime = 0;
+	if (lua_gettop(L) == 1)
+	{
+		waitTime = INFINITE;
+	}
+	else
+	{
+		waitTime = static_cast<DWORD>(luaL_checkinteger(L, 2));
+	}
+
+	DWORD result = WaitForSingleObject(*pmutex, waitTime);
+
+	if (result == WAIT_FAILED)
+	{
+		return doWhenFailed(L, "Mutex Lock Failed");
+	}
+	else
+	{
+		lua_pushboolean(L, true);
+		return 1;
+	}
+}
+
+int lua_unlockMutex(lua_State * L)
+{
+	auto *pmutex = CHECK_USERDATA_MUTEX(L);
+	
+	auto result = ReleaseMutex(*pmutex);
+
+	if (result == 0)
+	{
+		return doWhenFailed(L, "Mutex Unlock Failed");
+	}
+	else
+	{
+		lua_pushboolean(L, true);
+		return 1;
+	}
+}
+
+int lua_gcMutex(lua_State * L)
+{
+	auto * pmutex = CHECK_USERDATA_MUTEX(L);
+	// if failed CloseHandle will return zero
+	if (CloseHandle(*pmutex))
+	{
+		// success
+		lua_pushboolean(L, true);
+		return 1;
+	}
+	else
+	{
+		return doWhenFailed(L, "Close Mutex failed");
 	}
 }
 
