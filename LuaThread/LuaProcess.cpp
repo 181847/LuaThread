@@ -59,7 +59,7 @@ int lua_newThread(lua_State * L)
 	//			.....(maybe some no used argument)
 	// btm->	funtion
 	lua_pushvalue	(L, -3);
-	lua_setfield	(L, -2, "Thread");
+	lua_setfield	(L, -2, "LuaThread");
 
 
 	// for now, the stack state is 
@@ -69,7 +69,7 @@ int lua_newThread(lua_State * L)
 	//			.....(maybe some no used argument)
 	// btm->	funtion
 	lua_pushvalue	(L, -2);
-	lua_setfield	(L, -2, "ThreadInfo");
+	lua_setfield	(L, -2, "SysThread");
 	
 	return 1;
 }
