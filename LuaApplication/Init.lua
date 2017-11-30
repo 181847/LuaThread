@@ -62,7 +62,7 @@ mu = lp.newMutex()
 
 nt1 = lp.newThread(func1);
 nt2 = lp.newThread(func2);
-success, msg, code = nt1.ThreadInfo:resume()
+success, msg, code = nt1.SysThread:resume()
 assert(success, msg)
-success, msg, code = nt2.ThreadInfo:resume()
+success, msg, code = nt2.SysThread:resume()
 assert(success, msg)
