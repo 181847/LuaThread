@@ -34,14 +34,7 @@ int main()
 	luaInter1->DoFile("Init.lua");
 	luaInter1->Run();
 
-
-
-
-
-
 	getchar();
-
-
 
     return 0;
 }
